@@ -44,3 +44,17 @@ services:
       - 8080
     container_name: traefik-auth-cloudflare
     command: ["--auth-domain", "https://patrick.cloudflareaccess.com"]
+
+  echo:
+    image: traefik/whoami:v1.8.6
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.whoami-secure.rule=Host(`echo.p2.network`)'
+      - 'traefik.http.routers.whoami-secure.entrypoints=web'
+      - "traefik.http.routers.whoami-secure.middlewares=cf-connecting-ip@file,echo-auth@docker"
+      # Each request is first forwarded to traefik-auth-cloudflare to check the JWT token
+      # the Application Audience (aud) tag is given as an URL parameter: `/auth/{audience}`
+      - "traefik.http.middlewares.echo-auth.forwardauth.address=http://traefik-auth-cloudflare:8080/auth/c5d123c90cba3d592e8e76f3ec5be4cd2da68bb733abb35cf296e855605310a9"
+      # Optional: Forward the X-Auth-User header to the backend, which is set by traefik-auth-cloudflare to contain the user email
+      - "traefik.http.middlewares.echo-auth.forwardauth.authResponseHeaders=X-Auth-User"
