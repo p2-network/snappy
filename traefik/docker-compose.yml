@@ -7,7 +7,7 @@ services:
     container_name: "traefik"
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.api.rule=Host(`traefik.p2.network`)'
+      - 'traefik.http.routers.api.rule=Host(`snappy-traefik.p2.network`)'
       - 'traefik.http.routers.api.entrypoints=web'
       - 'traefik.http.routers.api.service=api@internal'
       - "traefik.http.routers.api.middlewares=cf-connecting-ip@file,api-auth@docker"
@@ -15,7 +15,7 @@ services:
       - "traefik.http.middlewares.api-auth.forwardauth.authResponseHeaders=X-Auth-User"
       - flame.type=application # "app" works too
       - flame.name=Traefik
-      - flame.url=https://traefik.p2.network/
+      - flame.url=https://snappy-traefik.p2.network/
       - flame.icon=tune-vertical
     command:
       #- "--log.level=DEBUG"
