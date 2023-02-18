@@ -11,7 +11,7 @@ services:
       - 'traefik.http.routers.api.entrypoints=web'
       - 'traefik.http.routers.api.service=api@internal'
       - "traefik.http.routers.api.middlewares=cf-connecting-ip@file,api-auth@docker"
-      - "traefik.http.middlewares.api-auth.forwardauth.address=http://traefik-auth-cloudflare:8080/auth/958cfed754de8a7ca03e9e3de513d9f2fd25d5308a9ac018d681aecffe2a92dd"
+      - "traefik.http.middlewares.api-auth.forwardauth.address=http://traefik-auth-cloudflare:8080/auth/490dc06b90c4f76e091e6a48ef0e168d78c19a032e3ab7783236cad7f8be844d"
       - "traefik.http.middlewares.api-auth.forwardauth.authResponseHeaders=X-Auth-User"
       - flame.type=application # "app" works too
       - flame.name=Traefik
