@@ -1,0 +1,46 @@
+version: "3.3"
+
+services:
+  traefik:
+    image: "traefik:v2.9.6"
+    restart: unless-stopped
+    container_name: "traefik"
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.api.rule=Host(`traefik.p2.network`)'
+      - 'traefik.http.routers.api.entrypoints=web'
+      - 'traefik.http.routers.api.service=api@internal'
+      - "traefik.http.routers.api.middlewares=cf-connecting-ip@file,api-auth@docker"
+      - "traefik.http.middlewares.api-auth.forwardauth.address=http://traefik-auth-cloudflare:8080/auth/958cfed754de8a7ca03e9e3de513d9f2fd25d5308a9ac018d681aecffe2a92dd"
+      - "traefik.http.middlewares.api-auth.forwardauth.authResponseHeaders=X-Auth-User"
+      - flame.type=application # "app" works too
+      - flame.name=Traefik
+      - flame.url=https://traefik.p2.network/
+      - flame.icon=tune-vertical
+    command:
+      #- "--log.level=DEBUG"
+      - "--api"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entryPoints.web.forwardedHeaders.trustedIPs=172.19.0.0/16"
+      - "--experimental.plugins.real-ip.moduleName=github.com/Paxxs/traefik-get-real-ip"
+      - "--experimental.plugins.real-ip.version=v1.0.2"
+      - "--providers.file.directory=/etc/traefik/"
+      - "--providers.file.watch=true"
+      - "--providers.docker.network=traefik_default"
+    ports:
+      - "80:80"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - ./traefik/:/etc/traefik/
+    environment:
+      - TZ=Australia/Melbourne
+
+  traefik-auth-cloudflare:
+    image: akohlbecker/traefik-auth-cloudflare
+    restart: always
+    expose:
+      - 8080
+    container_name: traefik-auth-cloudflare
+    command: ["--auth-domain", "https://patrick.cloudflareaccess.com"]

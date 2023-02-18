@@ -1,0 +1,12 @@
+http:
+  middlewares:
+    cf-connecting-ip:
+      plugin:
+        real-ip:
+          Proxy:
+            - proxyHeadername: Cdn-Loop
+              proxyHeadervalue: cloudflare
+              realIP: Cf-Connecting-Ip
+              OverwriteXFF: true # default: false, v1.0.2 or above
+            - proxyHeadername: "*"
+              realIP: RemoteAddr
