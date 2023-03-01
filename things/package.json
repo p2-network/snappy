@@ -1,0 +1,12 @@
+{
+    "name": "thingy",
+    "main": "index.ts",
+    "devDependencies": {
+        "@types/node": "^16",
+        "prettier": "^2.8.4"
+    },
+    "dependencies": {
+        "@pulumi/docker": "^3.6.1",
+        "@pulumi/pulumi": "^3.0.0"
+    }
+}
