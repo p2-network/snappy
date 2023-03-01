@@ -8,14 +8,6 @@ const network = new docker.Network("ytdl", {
   name: "ytdl"
 });
 
-// const ubuntuRegistryImage = docker.getRegistryImage({
-//   name: "ubuntu:precise",
-// });
-// const ubuntuRemoteImage = new docker.RemoteImage("ubuntuRemoteImage", {
-//   name: ubuntuRegistryImage.then(ubuntuRegistryImage => ubuntuRegistryImage.name),
-//   pullTriggers: [ubuntuRegistryImage.then(ubuntuRegistryImage => ubuntuRegistryImage.sha256Digest)],
-// });
-
 const dbImage = new docker.RemoteImage("ytdl/mongo", {
   name: "mongo"
 });
