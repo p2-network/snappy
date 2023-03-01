@@ -30,5 +30,3 @@ networks:
   traefik:
     name: traefik_default
     external: true
-
-volumes:
