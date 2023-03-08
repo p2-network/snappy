@@ -6,7 +6,7 @@
         "prettier": "^2.8.4"
     },
     "dependencies": {
-        "@pulumi/docker": "^3.6.1",
+        "@pulumi/docker": "^4.0.0",
         "@pulumi/pulumi": "^3.0.0"
     }
 }
