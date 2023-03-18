@@ -46,7 +46,7 @@ services:
     command: ["--auth-domain", "https://patrick.cloudflareaccess.com"]
 
   echo:
-    image: traefik/whoami:v1.8.7
+    image: traefik/whoami:v1.9.0
     restart: unless-stopped
     labels:
       - 'traefik.enable=true'
