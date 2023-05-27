@@ -25,7 +25,7 @@ services:
       - "--entryPoints.web.forwardedHeaders.trustedIPs=172.19.0.0/16"
       - "--entrypoints.websecure.address=:443"
 
-      - "--certificatesresolvers.p2.acme.storage=/etc/traefik-acme.json"
+      - "--certificatesresolvers.p2.acme.storage=/etc/traefik-acme/acme.json"
       - "--certificatesresolvers.p2.acme.dnschallenge.provider=cloudflare"
       - "--certificatesresolvers.p2.acme.dnschallenge.delaybeforecheck=0"
 
@@ -39,7 +39,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - ./traefik/:/etc/traefik/
-      - "/opt/p2-network/traefik-acme/acme.json:/etc/traefik-acme.json"
+      - "/opt/p2-network/traefik-acme/:/etc/traefik-acme/"
     environment:
       - TZ=Australia/Melbourne
       - CLOUDFLARE_DNS_API_TOKEN_FILE=/run/secrets/cf_dns_api_token
