@@ -13,6 +13,9 @@ services:
       - "traefik.http.routers.api.middlewares=cf-connecting-ip@file,api-auth@docker"
       - "traefik.http.middlewares.api-auth.forwardauth.address=http://traefik-auth-cloudflare:8080/auth/490dc06b90c4f76e091e6a48ef0e168d78c19a032e3ab7783236cad7f8be844d"
       - "traefik.http.middlewares.api-auth.forwardauth.authResponseHeaders=X-Auth-User"
+      - "traefik.tls.stores.default.defaultgeneratedcert.resolver=p2"
+      - "traefik.tls.stores.default.defaultgeneratedcert.domain.main=id.p2.network"
+      - "traefik.tls.stores.default.defaultgeneratedcert.domain.sans=*.p2.network"
     command:
       #- "--log.level=DEBUG"
       - "--api"
@@ -20,6 +23,12 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entryPoints.web.forwardedHeaders.trustedIPs=172.19.0.0/16"
+      - "--entrypoints.websecure.address=:443"
+
+      - "--certificatesresolvers.p2.acme.storage=/etc/traefik-acme.json"
+      - "--certificatesresolvers.p2.acme.dnschallenge.provider=cloudflare"
+      - "--certificatesresolvers.p2.acme.dnschallenge.delaybeforecheck=0"
+
       - "--experimental.plugins.real-ip.moduleName=github.com/Paxxs/traefik-get-real-ip"
       - "--experimental.plugins.real-ip.version=v1.0.2"
       - "--providers.file.directory=/etc/traefik/"
@@ -30,8 +39,14 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - ./traefik/:/etc/traefik/
+      - "/opt/p2-network/traefik-acme/acme.json:/etc/traefik-acme.json"
     environment:
       - TZ=Australia/Melbourne
+      - CLOUDFLARE_DNS_API_TOKEN_FILE=/run/secrets/cf_dns_api_token
+      - TRAEFIK_CERTIFICATESRESOLVERS_p2_ACME_EMAIL_FILE=/run/secrets/acme_email
+    secrets:
+      - cf_dns_api_token
+      - acme_email
 
   traefik-auth-cloudflare:
     image: akohlbecker/traefik-auth-cloudflare
@@ -54,3 +69,9 @@ services:
       - "traefik.http.middlewares.echo-auth.forwardauth.address=http://traefik-auth-cloudflare:8080/auth/c5d123c90cba3d592e8e76f3ec5be4cd2da68bb733abb35cf296e855605310a9"
       # Optional: Forward the X-Auth-User header to the backend, which is set by traefik-auth-cloudflare to contain the user email
       - "traefik.http.middlewares.echo-auth.forwardauth.authResponseHeaders=X-Auth-User"
+
+secrets:
+  cf_dns_api_token:
+    file: /opt/p2-network/run/DOCKER_TRAEFIK_CF_DNS_API_TOKEN
+  acme_email:
+    file: /opt/p2-network/run/DOCKER_TRAEFIK_ACME_EMAIL
