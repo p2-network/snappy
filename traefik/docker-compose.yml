@@ -6,17 +6,13 @@ services:
     restart: unless-stopped
     container_name: "traefik"
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.api.rule=Host(`snappy-traefik.p2.network`)'
-      - 'traefik.http.routers.api.entrypoints=web'
-      - 'traefik.http.routers.api.service=api@internal'
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`snappy-traefik.p2.network`)"
+      - "traefik.http.routers.api.entrypoints=web"
+      - "traefik.http.routers.api.service=api@internal"
       - "traefik.http.routers.api.middlewares=cf-connecting-ip@file,api-auth@docker"
       - "traefik.http.middlewares.api-auth.forwardauth.address=http://traefik-auth-cloudflare:8080/auth/490dc06b90c4f76e091e6a48ef0e168d78c19a032e3ab7783236cad7f8be844d"
       - "traefik.http.middlewares.api-auth.forwardauth.authResponseHeaders=X-Auth-User"
-      - flame.type=application # "app" works too
-      - flame.name=Traefik
-      - flame.url=https://snappy-traefik.p2.network/
-      - flame.icon=tune-vertical
     command:
       #- "--log.level=DEBUG"
       - "--api"
@@ -49,9 +45,9 @@ services:
     image: traefik/whoami:v1.9.0
     restart: unless-stopped
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.whoami-secure.rule=Host(`echo.p2.network`)'
-      - 'traefik.http.routers.whoami-secure.entrypoints=web'
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami-secure.rule=Host(`echo.p2.network`)"
+      - "traefik.http.routers.whoami-secure.entrypoints=web"
       - "traefik.http.routers.whoami-secure.middlewares=cf-connecting-ip@file,echo-auth@docker"
       # Each request is first forwarded to traefik-auth-cloudflare to check the JWT token
       # the Application Audience (aud) tag is given as an URL parameter: `/auth/{audience}`
