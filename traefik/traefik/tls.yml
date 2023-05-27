@@ -1,0 +1,9 @@
+tls:
+  stores:
+    default:
+      defaultGeneratedCert:
+        resolver: p2
+        domain:
+          main: id.p2.network
+          sans:
+            - *.p2.network
