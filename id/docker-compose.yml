@@ -1,0 +1,111 @@
+version: "3"
+
+## Examples
+#
+# Use oauth2-proxy (w/ redirect)
+#     http.routers.httpbin-route.rule=Host(`httpbin.oauth2-proxy.localhost`)
+#     http.routers.httpbin-route.middlewares=oauth2-proxy-redirect # redirects all unauthenticated to oauth2 signin
+#
+# Use oauth2-proxy (no redirect)
+#     http.routers.httpbin-route-2.rule="Host(`httpbin.oauth2-proxy.localhost`) && PathPrefix(`/no-auto-redirect`)"
+#     http.routers.httpbin-route-2.middlewares=oauth2-proxy-wo-redirect # unauthenticated session will return a 401
+
+services:
+  oauth2-proxy:
+    container_name: oauth2-proxy
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.4.0
+    command:
+      - "--http-address=0.0.0.0:4180"
+      - "--standard-logging=true"
+      - "--request-logging=true"
+      - "--auth-logging=true"
+
+      ## OIDC Provider
+      - "--provider=oidc"
+      - "--oidc-issuer_url=https://oauth.id.jumpcloud.com/"
+      - "--client-id=92a34cd6-f4a4-405f-a7a0-54dc68139b55"
+      - "--oidc-groups-claim=memberOf"
+      - "--redirect-url=https://id.p2.network/oauth2/callback"
+      - "--email-domains=*"
+
+      - "--skip-provider-button=true" # Redirect to login instead of showing "click to login"
+
+      ## Pass OAuth Access token to upstream via "X-Forwarded-Access-Token"
+      - "--pass_access_token=true"
+      - "--set-xauthrequest=true"
+      - "--reverse-proxy=true" # Mandatory option when using oauth2-proxy with traefik
+      - "--upstream=static://202" # Required for traefik with ForwardAuth and static upstream configuration
+
+      ## Cookie Settings
+      - "--cookie-name=Xr0"
+      - "--cookie_expire=24h"
+      - "--cookie_refresh=1h"
+      - "--cookie_secure=true"
+      - "--cookie_httponly=true"
+      - "--cookie_domain=.p2.network" # Required so cookie can be read on all subdomains.
+      - "--whitelist_domain=.p2.network" # Required to allow redirection back to original requested target.
+
+      ## Cookie Secret + Client Secret
+      - "--config=/oauth2-proxy.cfg"
+      - "--client-secret-file=/run/secrets/client_secret" # optional but required for (1)
+
+    ports:
+      - "4180:4180/tcp"
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.oauth2-proxy.rule=Host(`id.p2.network`)"
+      - "traefik.http.routers.oauth2-proxy.entrypoints=websecure"
+      - "traefik.http.routers.oauth2-proxy.tls=true"
+      - "traefik.http.routers.oauth2-proxy.tls.certresolver=p2"
+      - "traefik.http.routers.oauth2-proxy.middlewares=oauth2-proxy-headers@docker"
+
+      - "traefik.http.middlewares.oauth2-proxy-headers.headers.stsSeconds=315360000"
+      - "traefik.http.middlewares.oauth2-proxy-headers.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.oauth2-proxy-headers.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.oauth2-proxy-headers.headers.forceSTSHeader=true"
+      - "traefik.http.middlewares.oauth2-proxy-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.oauth2-proxy-headers.headers.stsPreload=true"
+      - "traefik.http.middlewares.oauth2-proxy-headers.headers.frameDeny=true"
+
+      - "traefik.http.middlewares.oauth2-proxy-redirect.forwardAuth.address=http://oauth2-proxy:4180"
+      - "traefik.http.middlewares.oauth2-proxy-redirect.forwardAuth.trustForwardHeader=true"
+      - "traefik.http.middlewares.oauth2-proxy-redirect.forwardAuth.authResponseHeaders=X-Auth-Request-Access-Token,Authorization,X-Auth-Request-User,X-Auth-Request-Email,X-Auth-Request-Groups,X-Auth-Request-Preferred-Username"
+
+      - "traefik.http.middlewares.oauth2-proxy-wo-redirect.forwardAuth.address=http://oauth2-proxy:4180/oauth2/auth"
+      - "traefik.http.middlewares.oauth2-proxy-wo-redirect.forwardAuth.trustForwardHeader=true"
+      - "traefik.http.middlewares.oauth2-proxy-wo-redirect.forwardAuth.authResponseHeaders=X-Auth-Request-Access-Token,Authorization,X-Auth-Request-User,X-Auth-Request-Email,X-Auth-Request-Groups,X-Auth-Request-Preferred-Username"
+
+    hostname: oauth2-proxy
+    volumes:
+      - "/opt/p2-network/run/oauth2-proxy.cfg:/oauth2-proxy.cfg:ro"
+    restart: unless-stopped
+    networks:
+      default:
+      traefik:
+    secrets:
+      - client_secret
+
+  echo:
+    image: traefik/whoami:v1.9.0
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.oauth2-proxy-echo.rule=Host(`echo.id.p2.network`)"
+      - "traefik.http.routers.oauth2-proxy-echo.entrypoints=websecure"
+      - "traefik.http.routers.oauth2-proxy-echo.tls=true"
+      - "traefik.http.routers.oauth2-proxy-echo.tls.certresolver=p2"
+      - "traefik.http.routers.oauth2-proxy-echo.middlewares=oauth2-proxy-redirect@docker"
+
+    networks:
+      default:
+      traefik:
+
+secrets:
+  client_secret:
+    file: /opt/p2-network/run/DOCKER_OAUTH2PROXY_CLIENT_SECRET
+
+networks:
+  traefik:
+    name: traefik_default
+    external: true
