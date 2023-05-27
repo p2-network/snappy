@@ -2,8 +2,8 @@ tls:
   stores:
     default:
       defaultGeneratedCert:
-        resolver: p2
+        resolver: "p2"
         domain:
-          main: id.p2.network
+          main: "id.p2.network"
           sans:
-            - *.p2.network
+            - "*.p2.network"
