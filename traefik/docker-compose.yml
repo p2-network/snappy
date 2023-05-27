@@ -77,8 +77,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.echotls.rule=Host(`echo-tls.p2.network`)"
       - "traefik.http.routers.echotls.entrypoints=websecure"
-      - "traefik.http.routers.blog.tls=true"
-      - "traefik.http.routers.blog.tls.certresolver=p2"
+      - "traefik.http.routers.echotls.tls=true"
+      - "traefik.http.routers.echotls.tls.certresolver=p2"
 
 secrets:
   cf_dns_api_token:
