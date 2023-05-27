@@ -47,7 +47,6 @@ services:
 
       ## Cookie Secret + Client Secret
       - "--config=/oauth2-proxy.cfg"
-      - "--client-secret-file=/run/secrets/client_secret" # optional but required for (1)
 
     ports:
       - "4180:4180/tcp"
@@ -83,8 +82,6 @@ services:
     networks:
       default:
       traefik:
-    secrets:
-      - client_secret
 
   echo:
     image: traefik/whoami:v1.9.0
@@ -100,10 +97,6 @@ services:
     networks:
       default:
       traefik:
-
-secrets:
-  client_secret:
-    file: /opt/p2-network/run/DOCKER_OAUTH2PROXY_CLIENT_SECRET
 
 networks:
   traefik:
