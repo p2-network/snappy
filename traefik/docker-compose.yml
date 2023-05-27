@@ -68,16 +68,6 @@ services:
       # Optional: Forward the X-Auth-User header to the backend, which is set by traefik-auth-cloudflare to contain the user email
       - "traefik.http.middlewares.echo-auth.forwardauth.authResponseHeaders=X-Auth-User"
 
-  echotls:
-    image: traefik/whoami:v1.9.0
-    restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.echotls.rule=Host(`echo-tls.p2.network`)"
-      - "traefik.http.routers.echotls.entrypoints=websecure"
-      - "traefik.http.routers.echotls.tls=true"
-      - "traefik.http.routers.echotls.tls.certresolver=p2"
-
 secrets:
   cf_dns_api_token:
     file: /opt/p2-network/run/DOCKER_TRAEFIK_CF_DNS_API_TOKEN
