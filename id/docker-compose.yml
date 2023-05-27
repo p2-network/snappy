@@ -26,7 +26,7 @@ services:
       - "--client-id=92a34cd6-f4a4-405f-a7a0-54dc68139b55"
       - "--oidc-groups-claim=memberOf"
       - "--redirect-url=https://id.p2.network/oauth2/callback"
-      - "--email-domains=*"
+      - "--email-domain=*"
 
       - "--skip-provider-button=true" # Redirect to login instead of showing "click to login"
 
