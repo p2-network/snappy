@@ -25,7 +25,7 @@ services:
       - "--oidc-issuer-url=https://oauth.id.jumpcloud.com/"
       - "--client-id=92a34cd6-f4a4-405f-a7a0-54dc68139b55"
       - "--oidc-groups-claim=memberOf"
-      - "--redirect-url=https://id.p2.network/oauth2/callback"
+      - "--redirect-url=https://i.m.ac.nz/oauth2/callback"
       - "--email-domain=*"
 
       - "--skip-provider-button=true" # Redirect to login instead of showing "click to login"
@@ -42,8 +42,8 @@ services:
       - "--cookie-refresh=1h"
       - "--cookie-secure=true"
       - "--cookie-httponly=true"
-      - "--cookie-domain=.p2.network" # Required so cookie can be read on all subdomains.
-      - "--whitelist-domain=.p2.network" # Required to allow redirection back to original requested target.
+      - "--cookie-domain=.m.ac.nz" # Required so cookie can be read on all subdomains.
+      - "--whitelist-domain=.m.ac.nz" # Required to allow redirection back to original requested target.
 
       ## Cookie Secret + Client Secret
       - "--config=/oauth2-proxy.cfg"
@@ -53,10 +53,11 @@ services:
 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.oauth2-proxy.rule=Host(`id.p2.network`)"
+      - "traefik.http.routers.oauth2-proxy.rule=Host(`i.m.ac.nz`)"
       - "traefik.http.routers.oauth2-proxy.entrypoints=websecure"
       - "traefik.http.routers.oauth2-proxy.tls=true"
       - "traefik.http.routers.oauth2-proxy.tls.certresolver=p2"
+      - "traefik.http.routers.oauth2-proxy.tls.domains[0].main=snappy.p2.network"
       - "traefik.http.routers.oauth2-proxy.middlewares=oauth2-proxy-headers@docker"
 
       - "traefik.http.middlewares.oauth2-proxy-headers.headers.stsSeconds=315360000"
@@ -88,26 +89,12 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.oauth2-proxy-echo.rule=Host(`echo.id.p2.network`)"
+      - "traefik.http.routers.oauth2-proxy-echo.rule=Host(`echo.i.m.ac.nz`)"
       - "traefik.http.routers.oauth2-proxy-echo.entrypoints=websecure"
       - "traefik.http.routers.oauth2-proxy-echo.tls=true"
       - "traefik.http.routers.oauth2-proxy-echo.tls.certresolver=p2"
+      - "traefik.http.routers.oauth2-proxy-echo.tls.domains[0].main=snappy.p2.network"
       - "traefik.http.routers.oauth2-proxy-echo.middlewares=oauth2-proxy-redirect@docker"
-
-    networks:
-      default:
-      traefik:
-
-  echo2:
-    image: traefik/whoami:v1.9.0
-    restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.oauth2-proxy-echo-i-m-ac-nz.rule=Host(`echo.i.m.ac.nz`)"
-      - "traefik.http.routers.oauth2-proxy-echo-i-m-ac-nz.entrypoints=websecure"
-      - "traefik.http.routers.oauth2-proxy-echo-i-m-ac-nz.tls=true"
-      - "traefik.http.routers.oauth2-proxy-echo-i-m-ac-nz.tls.certresolver=p2"
-      # - "traefik.http.routers.oauth2-proxy-echo-i-m-ac-nz.middlewares=oauth2-proxy-redirect@docker"
 
     networks:
       default:
