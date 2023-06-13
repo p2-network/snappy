@@ -98,6 +98,21 @@ services:
       default:
       traefik:
 
+  echo2:
+    image: traefik/whoami:v1.9.0
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.oauth2-proxy-echo-i-m-ac-nz.rule=Host(`echo.i.m.ac.nz`)"
+      - "traefik.http.routers.oauth2-proxy-echo-i-m-ac-nz.entrypoints=websecure"
+      - "traefik.http.routers.oauth2-proxy-echo-i-m-ac-nz.tls=true"
+      - "traefik.http.routers.oauth2-proxy-echo-i-m-ac-nz.tls.certresolver=p2"
+      # - "traefik.http.routers.oauth2-proxy-echo-i-m-ac-nz.middlewares=oauth2-proxy-redirect@docker"
+
+    networks:
+      default:
+      traefik:
+
 networks:
   traefik:
     name: traefik_default
