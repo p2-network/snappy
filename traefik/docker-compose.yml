@@ -21,6 +21,7 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entryPoints.web.forwardedHeaders.trustedIPs=172.19.0.0/16"
       - "--entrypoints.websecure.address=:443"
+      - "--entryPoints.websecure.forwardedHeaders.trustedIPs=172.19.0.0/16"
 
       - "--certificatesresolvers.p2.acme.storage=/etc/traefik-acme/acme.json"
       - "--certificatesresolvers.p2.acme.dnschallenge.provider=cloudflare"
