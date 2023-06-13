@@ -92,7 +92,7 @@ services:
       - "traefik.http.routers.oauth2-proxy-echo.entrypoints=websecure"
       - "traefik.http.routers.oauth2-proxy-echo.tls=true"
       - "traefik.http.routers.oauth2-proxy-echo.tls.certresolver=p2"
-      # - "traefik.http.routers.oauth2-proxy-echo.middlewares=oauth2-proxy-redirect@docker"
+      - "traefik.http.routers.oauth2-proxy-echo.middlewares=oauth2-proxy-redirect@docker"
 
     networks:
       default:
