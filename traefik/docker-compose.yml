@@ -52,6 +52,7 @@ services:
       - TZ=Australia/Melbourne
       - CLOUDFLARE_DNS_API_TOKEN_FILE=/run/secrets/cf_dns_api_token
       - TRAEFIK_CERTIFICATESRESOLVERS_p2_ACME_EMAIL_FILE=/run/secrets/acme_email
+      - TRAEFIK_CERTIFICATESRESOLVERS_campjs_ACME_EMAIL_FILE=/run/secrets/acme_email
     secrets:
       - cf_dns_api_token
       - acme_email
