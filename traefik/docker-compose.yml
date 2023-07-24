@@ -27,6 +27,9 @@ services:
       - "--certificatesresolvers.p2.acme.dnschallenge.provider=cloudflare"
       - "--certificatesresolvers.p2.acme.dnschallenge.delaybeforecheck=0"
 
+      - "--certificatesresolvers.campjs.acme.storage=/etc/traefik-acme/campjs.json"
+      - "--certificatesresolvers.campjs.acme.tlschallenge=true"
+
       - "--experimental.plugins.real-ip.moduleName=github.com/Paxxs/traefik-get-real-ip"
       - "--experimental.plugins.real-ip.version=v1.0.2"
       - "--providers.file.directory=/etc/traefik/"
