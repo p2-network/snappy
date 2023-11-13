@@ -2,7 +2,7 @@
     "name": "thingy",
     "main": "index.ts",
     "devDependencies": {
-        "@types/node": "^18.0.0",
+        "@types/node": "^20.0.0",
         "prettier": "^3.0.0"
     },
     "dependencies": {
