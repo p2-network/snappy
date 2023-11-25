@@ -30,6 +30,10 @@ services:
       - "--certificatesresolvers.campjs.acme.storage=/etc/traefik-acme/campjs.json"
       - "--certificatesresolvers.campjs.acme.tlschallenge=true"
 
+      - "--certificatesresolvers.route53.acme.storage=/etc/traefik-acme/route53.json"
+      - "--certificatesresolvers.route53.acme.dnschallenge.provider=route53"
+      - "--certificatesresolvers.route53.acme.dnschallenge.delaybeforecheck=0"
+
       - "--experimental.plugins.real-ip.moduleName=github.com/Paxxs/traefik-get-real-ip"
       - "--experimental.plugins.real-ip.version=v1.0.2"
       - "--providers.file.directory=/etc/traefik/"
@@ -51,6 +55,8 @@ services:
     environment:
       - TZ=Australia/Melbourne
       - CLOUDFLARE_DNS_API_TOKEN_FILE=/run/secrets/cf_dns_api_token
+      - AWS_ACCESS_KEY_ID=/run/secrets/route53_access_key
+      - AWS_SECRET_ACCESS_KEY=/run/secrets/route53_access_secret
       - TRAEFIK_CERTIFICATESRESOLVERS_p2_ACME_EMAIL_FILE=/run/secrets/acme_email
       - TRAEFIK_CERTIFICATESRESOLVERS_campjs_ACME_EMAIL_FILE=/run/secrets/acme_email
     secrets:
@@ -80,6 +86,10 @@ services:
       - "traefik.http.middlewares.echo-auth.forwardauth.authResponseHeaders=X-Auth-User"
 
 secrets:
+  route53_access_key:
+    file: /opt/p2-network/run/DOCKER_TRAEFIK_ROUTE53_ACCESSKEY
+  route53_access_secret:
+    file: /opt/p2-network/run/DOCKER_TRAEFIK_ROUTE53_SECRET
   cf_dns_api_token:
     file: /opt/p2-network/run/DOCKER_TRAEFIK_CF_DNS_API_TOKEN
   acme_email:
