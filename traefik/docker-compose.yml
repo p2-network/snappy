@@ -52,18 +52,16 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - ./traefik/:/etc/traefik/
       - "/opt/p2-network/traefik-acme/:/etc/traefik-acme/"
+      - "/opt/p2-network/run/DOCKER_TRAEFIK_AWS_SHARED_CREDENTIALS_FILE:/etc/traefik-aws-credentials"
     environment:
       - TZ=Australia/Melbourne
       - CLOUDFLARE_DNS_API_TOKEN_FILE=/run/secrets/cf_dns_api_token
-      - AWS_ACCESS_KEY_ID_FILE=/run/secrets/route53_access_key
-      - AWS_SECRET_ACCESS_KEY_FILE=/run/secrets/route53_access_secret
+      - AWS_SHARED_CREDENTIALS_FILE=/etc/traefik-aws-credentials
       - AWS_REGION=ap-southeast-2
       - TRAEFIK_CERTIFICATESRESOLVERS_p2_ACME_EMAIL_FILE=/run/secrets/acme_email
       - TRAEFIK_CERTIFICATESRESOLVERS_campjs_ACME_EMAIL_FILE=/run/secrets/acme_email
     secrets:
       - cf_dns_api_token
-      - route53_access_key
-      - route53_access_secret
       - acme_email
 
   traefik-auth-cloudflare:
@@ -89,10 +87,6 @@ services:
       - "traefik.http.middlewares.echo-auth.forwardauth.authResponseHeaders=X-Auth-User"
 
 secrets:
-  route53_access_key:
-    file: /opt/p2-network/run/DOCKER_TRAEFIK_ROUTE53_ACCESSKEY
-  route53_access_secret:
-    file: /opt/p2-network/run/DOCKER_TRAEFIK_ROUTE53_SECRET
   cf_dns_api_token:
     file: /opt/p2-network/run/DOCKER_TRAEFIK_CF_DNS_API_TOKEN
   acme_email:
