@@ -55,8 +55,9 @@ services:
     environment:
       - TZ=Australia/Melbourne
       - CLOUDFLARE_DNS_API_TOKEN_FILE=/run/secrets/cf_dns_api_token
-      - AWS_ACCESS_KEY_ID=/run/secrets/route53_access_key
-      - AWS_SECRET_ACCESS_KEY=/run/secrets/route53_access_secret
+      - AWS_ACCESS_KEY_ID_FILE=/run/secrets/route53_access_key
+      - AWS_SECRET_ACCESS_KEY_FILE=/run/secrets/route53_access_secret
+      - AWS_REGION=ap-southeast-2
       - TRAEFIK_CERTIFICATESRESOLVERS_p2_ACME_EMAIL_FILE=/run/secrets/acme_email
       - TRAEFIK_CERTIFICATESRESOLVERS_campjs_ACME_EMAIL_FILE=/run/secrets/acme_email
     secrets:
