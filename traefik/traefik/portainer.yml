@@ -1,8 +1,4 @@
 http:
-  serversTransports:
-    no-verify-tls:
-      insecureSkipVerify: true
-
   routers:
     portainer-api:
       rule: "Host(`portainer.i.m.ac.nz`) && PathPrefix(`/api/stacks/webhooks`)"
@@ -37,8 +33,7 @@ http:
     portainer:
       loadBalancer:
         servers:
-        - url: "https://172.17.0.1:9443"
-        serversTransport: no-verify-tls@file
+        - url: "http://172.17.0.1:8000"
 
 
         
