@@ -1,36 +1,27 @@
 import { ContainerLabel } from "@pulumi/docker/types/input";
 
-export const traefikConfig = (
-  app: string,
-  authKey?: string
-): ContainerLabel[] => {
-  const middlewares = ["cf-connecting-ip@file"];
-  const labels = [
-    { label: "traefik.enable", value: "true" },
-    {
-      label: `traefik.http.routers.${app}.rule`,
-      value: "Host(`ytdl.p2.network`)"
-    },
-    { label: `traefik.http.routers.${app}.entrypoints`, value: "web" },
-    {
-      label: `traefik.http.routers.${app}.middlewares`,
-      value: middlewares.join(",")
-    }
-  ];
+const tailscaleIPs = 'ClientIP(`100.0.0.0/8`, `fd7a:115c:a1e0:ab12::/64`)';
 
-  if (authKey) {
-    middlewares.push(`${app}-auth@docker`);
-    labels.push(
-      {
-        label: `traefik.http.middlewares.${app}-auth.forwardauth.address`,
-        value: `http://traefik-auth-cloudflare:8080/auth/${authKey}`
-      },
-      {
-        label: `traefik.http.middlewares.${app}-auth.forwardauth.authResponseHeaders`,
-        value: "X-Auth-User"
-      }
-    );
-  }
+export const traefikConfig = (app: string): ContainerLabel[] => {
+  const routerPublic = `traefik.http.routers.${app}`;
+  const routerPrivate = `traefik.http.routers.${app}-private`;
+  const labels = [
+    // Internet
+    { label: "traefik.enable", value: "true" },
+    { label: `${routerPublic}.rule`, value: `Host(\`${app}.i.m.ac.nz\`)` },
+    { label: `${routerPublic}.entrypoints`, value: "websecure" },
+    { label: `${routerPublic}.middlewares`, value: 'oauth2-proxy-redirect@docker' },
+    { label: `${routerPublic}.tls`, value: "true" },
+    { label: `${routerPublic}.tls.certresolver`, value: "route53" },
+    { label: `${routerPublic}.tls.domains[0].main`, value: "*.i.m.ac.nz" },
+
+    // Tailscale only
+    { label: `${routerPrivate}.rule`, value: `Host(\`${app}.snappy.thepatrick.cloud\`) && ${tailscaleIPs}` },
+    { label: `${routerPrivate}.entrypoints`, value: "websecure" },
+    { label: `${routerPrivate}.tls`, value: "true" },
+    { label: `${routerPrivate}.tls.certresolver`, value: "route53" },
+    { label: `${routerPrivate}.tls.domains[0].main`, value: "*.snappy.thepatrick.cloud" },
+  ];
 
   return labels;
 };

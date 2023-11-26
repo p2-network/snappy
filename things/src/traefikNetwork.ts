@@ -1,5 +1,5 @@
-import * as docker from "@pulumi/docker";
+import { getNetworkOutput } from "@pulumi/docker";
 
-export const traefikNetwork = docker.getNetworkOutput({
+export const traefikNetwork = getNetworkOutput({
   name: "traefik_default"
 });

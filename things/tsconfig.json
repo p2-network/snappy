@@ -14,7 +14,6 @@
   },
   "files": [
     "index.ts",
-    "./src/flameLabels.ts",
     "./src/traefikConfig.ts",
     "./src/traefikNetwork.ts"
   ]
