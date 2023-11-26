@@ -34,8 +34,8 @@ http:
       loadBalancer:
         servers:
         - url: "https://172.17.0.1:9443"
-        serversTransport: no-verify
+        serversTransport: mytransport
 
   serversTransports:
-    no-verify:
+    mytransport:
       insecureSkipVerify: true
