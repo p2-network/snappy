@@ -65,7 +65,7 @@ services:
       - 'traefik.http.routers.paperless-ngx.tls.domains[0].main=*.i.m.ac.nz'
       - 'traefik.http.routers.paperless-ngx.middlewares=oauth2-proxy-redirect@docker'
 
-      - 'traefik.http.routers.paperless-ngx-ts.rule=Host(`pukapuka.snappy.thepatrick.cloud`)'
+      - 'traefik.http.routers.paperless-ngx-ts.rule=Host(`pukapuka.snappy.thepatrick.cloud`) && ClientIP(`100.0.0.0/8`, `fd7a:115c:a1e0:ab12::/64`)'
       - 'traefik.http.routers.paperless-ngx-ts.entrypoints=websecure'
       - 'traefik.http.routers.paperless-ngx-ts.tls=true'
       - 'traefik.http.routers.paperless-ngx-ts.tls.certresolver=route53'
