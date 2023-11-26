@@ -50,9 +50,9 @@ services:
       - /opt/p2-network/paperless/consume:/usr/src/paperless/consume
     env_file:
       - docker-compose.env
-      - stack.env
     environment:
       PAPERLESS_REDIS: redis://broker:6379
+      PAPERLESS_SECRET_KEY: ${PAPERLESS_SECRET_KEY}
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.paperless-ngx.rule=Host(`pukapuka.i.m.ac.nz`)'
