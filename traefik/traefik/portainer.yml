@@ -1,7 +1,7 @@
 http:
   routers:
     portainer-api:
-      rule: "Host(portainer.i.m.ac.nz) && PathPrefix(`/api/stacks/webhooks`)"
+      rule: "Host(`portainer.i.m.ac.nz`) && PathPrefix(`/api/stacks/webhooks`)"
       service: portainer
       entrypoints: websecure
       tls:
@@ -10,7 +10,7 @@ http:
         - main: "*.i.m.ac.nz"
 
     portainer-ui:
-      rule: "Host(portainer.i.m.ac.nz)"
+      rule: "Host(`portainer.i.m.ac.nz`)"
       service: portainer
       entrypoints: websecure
       tls:
