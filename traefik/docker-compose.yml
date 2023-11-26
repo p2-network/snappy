@@ -7,7 +7,7 @@ services:
     container_name: "traefik"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api-tailscale.rule=Host(`traefik.snappy.thepatrick.cloud`)"
+      - "traefik.http.routers.api-tailscale.rule=Host(`traefik.snappy.thepatrick.cloud`) && ClientIP(`100.0.0.0/8`, `fd7a:115c:a1e0:ab12::/64`)"
       - "traefik.http.routers.api-tailscale.entrypoints=websecure"
       - "traefik.http.routers.api-tailscale.service=api@internal"
       - "traefik.http.routers.api-tailscale.tls=true"
