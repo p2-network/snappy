@@ -50,7 +50,7 @@ services:
       - /opt/p2-network/paperless/consume:/usr/src/paperless/consume
     env_file:
       - docker-compose.env
-      - /opt/p2-network/run/paperless-secrets.env
+      - stack.env
     environment:
       PAPERLESS_REDIS: redis://broker:6379
     labels:
