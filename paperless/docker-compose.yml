@@ -1,0 +1,86 @@
+# docker-compose file for running paperless from the Docker Hub.
+# This file contains everything paperless needs to run.
+# Paperless supports amd64, arm and arm64 hardware.
+#
+# All compose files of paperless configure paperless in the following way:
+#
+# - Paperless is (re)started on system boot, if it was running before shutdown.
+# - Docker volumes for storing data are managed by Docker.
+# - Folders for importing and exporting files are created in the same directory
+#   as this file and mounted to the correct folders inside the container.
+# - Paperless listens on port 8000.
+#
+# SQLite is used as the database. The SQLite file is stored in the data volume.
+#
+# To install and update paperless with this file, do the following:
+#
+# - Copy this file as 'docker-compose.yml' and the files 'docker-compose.env'
+#   and '.env' into a folder.
+# - Run 'docker-compose pull'.
+# - Run 'docker-compose run --rm webserver createsuperuser' to create a user.
+# - Run 'docker-compose up -d'.
+#
+# For more extensive installation and update instructions, refer to the
+# documentation.
+
+version: "3.4"
+services:
+  broker:
+    image: redis:6.0
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+
+  webserver:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    restart: unless-stopped
+    depends_on:
+      - broker
+    expose:
+    - 8000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - /opt/p2-network/paperless/data:/usr/src/paperless/data
+      - /opt/p2-network/paperless/media:/usr/src/paperless/media
+      - /opt/p2-network/paperless/export:/usr/src/paperless/export
+      - /opt/p2-network/paperless/consume:/usr/src/paperless/consume
+    env_file:
+      - docker-compose.env
+      - /opt/p2-network/run/paperless-secrets.env
+    environment:
+      PAPERLESS_REDIS: redis://broker:6379
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.paperless-ngx.rule=Host(`pukapuka.i.m.ac.nz`)'
+      - 'traefik.http.routers.paperless-ngx.entrypoints=websecure'
+      - 'traefik.http.routers.paperless-ngx.tls=true'
+      - 'traefik.http.routers.paperless-ngx.tls.certresolver=route53'
+      - 'traefik.http.routers.paperless-ngx.tls.domains[0].main=*.i.m.ac.nz'
+      - 'traefik.http.routers.paperless-ngx.middlewares=oauth2-proxy-redirect@docker'
+
+      - 'traefik.http.routers.paperless-ngx-ts.rule=Host(`pukapuka.snappy.thepatrick.cloud`)'
+      - 'traefik.http.routers.paperless-ngx-ts.entrypoints=websecure'
+      - 'traefik.http.routers.paperless-ngx-ts.tls=true'
+      - 'traefik.http.routers.paperless-ngx-ts.tls.certresolver=route53'
+      - 'traefik.http.routers.paperless-ngx-ts.tls.domains[0].main=*.snappy.thepatrick.cloud'
+
+      # - 'traefik.http.routers.paperless-ngx-ts.middlewares=oauth2-proxy-redirect@docker'
+
+      # - "traefik.http.routers.paperless-ngx.middlewares=cf-connecting-ip@file,paperless-ngx-auth@docker"
+      # - "traefik.http.middlewares.paperless-ngx-auth.forwardauth.address=http://traefik-auth-cloudflare:8080/auth/6270ee4086bc3173f54c6e5956c7382ce160a6eb0f2255e1311df8aa532da5cb"
+      # - "traefik.http.middlewares.paperless-ngx-auth.forwardauth.authResponseHeaders=X-Auth-User"
+    networks:
+      default:
+      traefik:
+
+networks:
+  traefik:
+    name: traefik_default
+    external: true
+
+volumes:
+  redisdata:
