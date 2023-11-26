@@ -17,16 +17,18 @@ services:
     command:
       #- "--log.level=DEBUG"
       - "--api"
+
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=traefik_default"
+
+      - "--providers.file.directory=/etc/traefik/"
+      - "--providers.file.watch=true"
+
       - "--entrypoints.web.address=:80"
       - "--entryPoints.web.forwardedHeaders.trustedIPs=172.19.0.0/16"
       - "--entrypoints.websecure.address=:443"
       - "--entryPoints.websecure.forwardedHeaders.trustedIPs=172.19.0.0/16"
-
-      - "--certificatesresolvers.p2.acme.storage=/etc/traefik-acme/acme.json"
-      - "--certificatesresolvers.p2.acme.dnschallenge.provider=cloudflare"
-      - "--certificatesresolvers.p2.acme.dnschallenge.delaybeforecheck=0"
 
       - "--certificatesresolvers.campjs.acme.storage=/etc/traefik-acme/campjs.json"
       - "--certificatesresolvers.campjs.acme.tlschallenge=true"
@@ -37,9 +39,6 @@ services:
 
       - "--experimental.plugins.real-ip.moduleName=github.com/Paxxs/traefik-get-real-ip"
       - "--experimental.plugins.real-ip.version=v1.0.2"
-      - "--providers.file.directory=/etc/traefik/"
-      - "--providers.file.watch=true"
-      - "--providers.docker.network=traefik_default"
     ports:
       - target: 80
         published: 80
@@ -56,39 +55,13 @@ services:
       - "/opt/p2-network/run/DOCKER_TRAEFIK_AWS_SHARED_CREDENTIALS_FILE:/etc/traefik-aws-credentials"
     environment:
       - TZ=Australia/Melbourne
-      - CLOUDFLARE_DNS_API_TOKEN_FILE=/run/secrets/cf_dns_api_token
       - AWS_SHARED_CREDENTIALS_FILE=/etc/traefik-aws-credentials
       - AWS_REGION=ap-southeast-2
       - TRAEFIK_CERTIFICATESRESOLVERS_p2_ACME_EMAIL_FILE=/run/secrets/acme_email
       - TRAEFIK_CERTIFICATESRESOLVERS_campjs_ACME_EMAIL_FILE=/run/secrets/acme_email
     secrets:
-      - cf_dns_api_token
       - acme_email
 
-  traefik-auth-cloudflare:
-    image: akohlbecker/traefik-auth-cloudflare
-    restart: always
-    expose:
-      - 8080
-    container_name: traefik-auth-cloudflare
-    command: ["--auth-domain", "https://patrick.cloudflareaccess.com"]
-
-  echo:
-    image: traefik/whoami:v1.10.1
-    restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami-secure.rule=Host(`echo.p2.network`)"
-      - "traefik.http.routers.whoami-secure.entrypoints=web"
-      - "traefik.http.routers.whoami-secure.middlewares=cf-connecting-ip@file,echo-auth@docker"
-      # Each request is first forwarded to traefik-auth-cloudflare to check the JWT token
-      # the Application Audience (aud) tag is given as an URL parameter: `/auth/{audience}`
-      - "traefik.http.middlewares.echo-auth.forwardauth.address=http://traefik-auth-cloudflare:8080/auth/c5d123c90cba3d592e8e76f3ec5be4cd2da68bb733abb35cf296e855605310a9"
-      # Optional: Forward the X-Auth-User header to the backend, which is set by traefik-auth-cloudflare to contain the user email
-      - "traefik.http.middlewares.echo-auth.forwardauth.authResponseHeaders=X-Auth-User"
-
 secrets:
-  cf_dns_api_token:
-    file: /opt/p2-network/run/DOCKER_TRAEFIK_CF_DNS_API_TOKEN
   acme_email:
     file: /opt/p2-network/run/DOCKER_TRAEFIK_ACME_EMAIL

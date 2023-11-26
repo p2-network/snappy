@@ -2,6 +2,6 @@ tls:
   stores:
     default:
       defaultGeneratedCert:
-        resolver: "p2"
+        resolver: "route53"
         domain:
-          main: "*.p2.network"
+          main: "*.i.m.ac.nz"
