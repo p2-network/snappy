@@ -53,6 +53,8 @@ services:
     environment:
       PAPERLESS_REDIS: redis://broker:6379
       PAPERLESS_SECRET_KEY: ${PAPERLESS_SECRET_KEY}
+      PAPERLESS_URL: https://pukapuka.i.m.ac.nz
+      PAPERLESS_CSRF_TRUSTED_ORIGINS: https://pukapuka.i.m.ac.nz,https://pukapuka.snappy.thepatrick.cloud
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.paperless-ngx.rule=Host(`pukapuka.i.m.ac.nz`)'
