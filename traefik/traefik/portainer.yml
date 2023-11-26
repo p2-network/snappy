@@ -20,6 +20,15 @@ http:
       middlewares:
       - oauth2-proxy-headers@docker
 
+    portainer-ui-ts:
+      rule: "Host(`portainer.snappy.thepatrick.cloud`) && ClientIP(`100.0.0.0/8`, `fd7a:115c:a1e0:ab12::/64`)"
+      service: portainer
+      entrypoints: websecure
+      tls:
+        certResolver: route53
+        domains:
+        - main: "*.snappy.thepatrick.cloud"
+
   services:
     portainer:
       loadBalancer:
