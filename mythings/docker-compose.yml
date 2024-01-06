@@ -11,7 +11,6 @@ services:
      TZ: Australia/Melbourne
      APP_CSRF_TRUSTED_ORIGINS: "https://mythings.snappy.thepatrick.cloud"
      APP_DJANGO_SECRET_KEY_FILE: "/run/secrets/django_secret_key"
-     BOGUS_FILE: "/nofile"
     volumes:
       - "/opt/p2-network/mythings/data:/opt/mythings/data"
       - "/opt/p2-network/mythings/logs/mythings:/var/log/mythings"
