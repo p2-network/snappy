@@ -1,0 +1,39 @@
+version: "3.4"
+services:
+  webserver:
+    image: ghcr.io/thepatrick/mythings:sha-3e629c8
+    restart: unless-stopped
+    expose:
+      - 8080
+    environment:
+     USERMAP_UID: 1000
+     USERMAP_GID: 1000
+     TZ: Australia/Melbourne
+     APP_CSRF_TRUSTED_ORIGINS: "https://mythings.snappy.thepatrick.cloud"
+     APP_DJANGO_SECRET_KEY_FILE: "/run/secrets/django_secret_key"
+     BOGUS_FILE: "/nofile"
+    volumes:
+      - "/opt/p2-network/mythings/data:/opt/mythings/data"
+      - "/opt/p2-network/mythings/logs/mythings:/var/log/mythings"
+      - "/opt/p2-network/mythings/logs/supervisord:/var/log/supervisord"
+    secrets:
+      - django_secret_key
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.mythings-ts.rule=Host(`mythings.snappy.thepatrick.cloud`) && ClientIP(`100.0.0.0/8`, `fd7a:115c:a1e0:ab12::/64`)'
+      - 'traefik.http.routers.mythings-ts.entrypoints=websecure'
+      - 'traefik.http.routers.mythings-ts.tls=true'
+      - 'traefik.http.routers.mythings-ts.tls.certresolver=route53'
+      - 'traefik.http.routers.mythings-ts.tls.domains[0].main=*.snappy.thepatrick.cloud'
+    networks:
+      defualt:
+      traefik:
+
+networks:
+  traefik:
+    name: traefik_default
+    external: true
+
+secrets:
+  django_secret_key:
+    file: /opt/p2-network/run/DOCKER_MYTHINGS_DJANGO_SECRET_KEY
