@@ -25,7 +25,7 @@ services:
       - 'traefik.http.routers.mythings-ts.tls.certresolver=route53'
       - 'traefik.http.routers.mythings-ts.tls.domains[0].main=*.snappy.thepatrick.cloud'
     networks:
-      defualt:
+      default:
       traefik:
 
 networks:
