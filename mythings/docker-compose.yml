@@ -1,7 +1,7 @@
 version: "3.4"
 services:
   webserver:
-    image: ghcr.io/thepatrick/mythings:sha-4b958d4
+    image: ghcr.io/thepatrick/mythings:sha-9b5d483
     restart: unless-stopped
     expose:
       - 8080
