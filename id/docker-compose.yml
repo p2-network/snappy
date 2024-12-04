@@ -13,7 +13,7 @@ version: "3"
 services:
   oauth2-proxy:
     container_name: oauth2-proxy
-    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.7.1
     command:
       - "--http-address=0.0.0.0:4180"
       - "--standard-logging=true"
@@ -85,7 +85,7 @@ services:
       traefik:
 
   echo:
-    image: traefik/whoami:v1.10.2
+    image: traefik/whoami:v1.10.3
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
