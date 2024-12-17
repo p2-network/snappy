@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
   traefik:
-    image: "traefik:v2.11.14"
+    image: "traefik:v3.2.3"
     restart: unless-stopped
     container_name: "traefik"
     labels:
