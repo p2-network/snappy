@@ -1,5 +1,20 @@
+# TODO: Write
+#   contents: "DOCKER_TRAEFIK_I_M_AC_NZ=....."
+#   to: /opt/p2-network/run/DOCKER_TRAEFIK_CLOUDFLARE_DISTRIBUTIONS
+
 http:
   middlewares:
+    i-m-ac-nz-ip:
+      plugin:
+        real-ip:
+          Proxy:
+            - proxyHeadername: X-CloudFront
+              proxyHeadervalue: {{ env "DOCKER_TRAEFIK_I_M_AC_NZ" }}
+              realIP: True-Client-Ip
+              OverwriteXFF: true # default: false, v1.0.2 or above
+            - proxyHeadername: "*"
+              realIP: RemoteAddr
+
     cf-connecting-ip:
       plugin:
         real-ip:
